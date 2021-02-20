@@ -10017,7 +10017,7 @@ module.exports = resolveCommand;
 /***/ 543:
 /***/ (function(module) {
 
-function buildSlackMessage({ start, finish, success, failure }, { context }) {
+function buildSlackMessage({ start, finish, version }, { context }) {
   const { payload, ref, workflow, eventName } = context;
   const { owner, repo } = context.repo;
   const event = eventName;
