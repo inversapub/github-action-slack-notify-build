@@ -1080,7 +1080,7 @@ const { buildSlackAttachments, formatChannelName } = __webpack_require__(543);
       return;
     }
 
-    const attachments = buildSlackAttachments({ status, color, github });
+    const blocks = buildSlackAttachments({ status, color, github });
     const channelId = core.getInput('channel_id') || (await lookUpChannelId({ slack, channel }));
 
     if (!channelId) {
@@ -1090,16 +1090,30 @@ const { buildSlackAttachments, formatChannelName } = __webpack_require__(543);
 
     const apiMethod = Boolean(messageId) ? 'update' : 'postMessage';
 
-    const args = {
+    const attachments = [
+      {
+        color,
+        fields: [
+          {
+            title: 'Fixed text',
+            value: `Workflow ${workflow}`,
+            short: true,
+          },
+        ],
+      },
+    ];
+
+    const message = {
       channel: channelId,
-      attachments,
+      blocks,
+      attachments
     };
 
     if (messageId) {
-      args.ts = messageId;
+      message.ts = messageId;
     }
 
-    const response = await slack.chat[apiMethod](args);
+    const response = await slack.chat[apiMethod](message);
 
     core.setOutput('message_id', response.ts);
   } catch (error) {
@@ -1115,7 +1129,7 @@ async function lookUpChannelId({ slack, channel }) {
   // Use only the first two parameters to get an async iterator.
   for await (const page of slack.paginate('conversations.list', { types: 'public_channel, private_channel' })) {
     // You can inspect each page, find your result, and stop the loop with a `break` statement
-    const match = page.channels.find(c => c.name === formattedChannel);
+    const match = page.channels.find((c) => c.name === formattedChannel);
     if (match) {
       result = match.id;
       break;
@@ -10007,47 +10021,88 @@ function buildSlackAttachments({ status, color, github }) {
   const event = eventName;
   const branch = event === 'pull_request' ? payload.pull_request.head.ref : ref.replace('refs/heads/', '');
 
-  const sha = event === 'pull_request' ? payload.pull_request.head.sha : github.context.sha;
 
-  const referenceLink =
-    event === 'pull_request'
-      ? {
-          title: 'Pull Request',
-          value: `<${payload.pull_request.html_url} | ${payload.pull_request.title}>`,
-          short: true,
+  const blocks = [
+      {
+        "type": "header",
+        "text": {
+          "type": "plain_text",
+          "text": "Build Pipeline",
+          "emoji": true
         }
-      : {
-          title: 'Branch',
-          value: `<https://github.com/${owner}/${repo}/commit/${sha} | ${branch}>`,
-          short: true,
-        };
+      },
+      {
+        "type": "divider"
+      },
+      {
+        "type": "section",
+        "fields": [
+          {
+            "type": "mrkdwn",
+            "text": "*Service*"
+          },
+          {
+            "type": "mrkdwn",
+            "text": "*Status*"
+          },
+          {
+            "type": "mrkdwn",
+            "text": repo
+          },
+          {
+            "type": "mrkdwn",
+            "text": status
+          }
+        ]
+      },
+      {
+        "type": "divider"
+      }
+    ];
 
-  return [
-    {
-      color,
-      fields: [
-        {
-          title: 'Action',
-          value: `<https://github.com/${owner}/${repo}/commit/${sha}/checks | ${workflow}>`,
-          short: true,
-        },
-        {
-          title: 'Status',
-          value: status,
-          short: true,
-        },
-        referenceLink,
-        {
-          title: 'Event',
-          value: event,
-          short: true,
-        },
-      ],
-      footer_icon: 'https://github.githubassets.com/favicon.ico',
-      footer: `<https://github.com/${owner}/${repo} | ${owner}/${repo}>`,
-      ts: Math.floor(Date.now() / 1000),
-    },
-  ];
+  // const sha = event === 'pull_request' ? payload.pull_request.head.sha : github.context.sha;
+
+  // const referenceLink =
+  //   event === 'pull_request'
+  //     ? {
+  //         title: 'Pull Request',
+  //         value: `<${payload.pull_request.html_url} | ${payload.pull_request.title}>`,
+  //         short: true,
+  //       }
+  //     : {
+  //         title: 'Branch',
+  //         value: `<https://github.com/${owner}/${repo}/commit/${sha} | ${branch}>`,
+  //         short: true,
+  //       };
+
+  // return [
+  //   {
+  //     color,
+  //     fields: [
+  //       {
+  //         title: 'Action',
+  //         value: `<https://github.com/${owner}/${repo}/commit/${sha}/checks | ${workflow}>`,
+  //         short: true,
+  //       },
+  //       {
+  //         title: 'Status',
+  //         value: status,
+  //         short: true,
+  //       },
+  //       referenceLink,
+  //       {
+  //         title: 'Event',
+  //         value: event,
+  //         short: true,
+  //       },
+  //     ],
+  //     footer_icon: 'https://github.githubassets.com/favicon.ico',
+  //     footer: `<https://github.com/${owner}/${repo} | ${owner}/${repo}>`,
+  //     ts: Math.floor(Date.now() / 1000),
+  //   },
+  // ];
+
+  return blocks;
 }
 
 module.exports.buildSlackAttachments = buildSlackAttachments;
