@@ -27,7 +27,7 @@ const { buildSlackMessage, formatChannelName } = require('./src/utils');
       return;
     }
 
-    const apiMethod = Boolean(messageId) ? 'update' : 'postMessage';
+    const apiMethod = Boolean(messageId) ? 'update' : 'postEphemeral';
     core.debug(`Will ${apiMethod} in slack`);
 
     const params = {
