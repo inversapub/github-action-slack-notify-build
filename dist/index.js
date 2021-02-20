@@ -1080,38 +1080,39 @@ const { buildSlackMessage, formatChannelName } = __webpack_require__(543);
       return;
     }
 
-    const blocks = buildSlackMessage({ status, color, github });
     const channelId = core.getInput('channel_id') || (await lookUpChannelId({ slack, channel }));
-
+    
     if (!channelId) {
       core.setFailed(`Slack channel ${channel} could not be found.`);
       return;
     }
-
+    
     const apiMethod = Boolean(messageId) ? 'update' : 'postMessage';
+
+    const blocks = buildSlackMessage({ status, color, github });
 
     const message = {
       channel: channelId,
       blocks,
-      attachments,
+      // attachments,
       as_user: true,
     };
 
-    if (status === 'FINISHED') {
-    }
+    // if (status === 'FINISHED') {
+    // }
 
-    const attachments = [
-      {
-        color,
-        fields: [
-          {
-            title: 'Fixed text',
-            value: `Running image build`,
-            short: true,
-          },
-        ],
-      },
-    ];
+    // const attachments = [
+    //   {
+    //     color,
+    //     fields: [
+    //       {
+    //         title: 'Fixed text',
+    //         value: `Running image build`,
+    //         short: true,
+    //       },
+    //     ],
+    //   },
+    // ];
 
     if (messageId) {
       message.ts = messageId;
