@@ -6,44 +6,43 @@ function buildSlackAttachments({ status, color, github }) {
   const event = eventName;
   const branch = event === 'pull_request' ? payload.pull_request.head.ref : ref.replace('refs/heads/', '');
 
-
   const blocks = [
-      {
-        "type": "header",
-        "text": {
-          "type": "plain_text",
-          "text": "Build Pipeline",
-          "emoji": true
-        }
+    {
+      type: 'header',
+      text: {
+        type: 'plain_text',
+        text: 'Build Pipeline',
+        emoji: true,
       },
-      {
-        "type": "divider"
-      },
-      {
-        "type": "section",
-        "fields": [
-          {
-            "type": "mrkdwn",
-            "text": "*Service*"
-          },
-          {
-            "type": "mrkdwn",
-            "text": "*Status*"
-          },
-          {
-            "type": "mrkdwn",
-            "text": repo
-          },
-          {
-            "type": "mrkdwn",
-            "text": status
-          }
-        ]
-      },
-      {
-        "type": "divider"
-      }
-    ];
+    },
+    {
+      type: 'divider',
+    },
+    {
+      type: 'section',
+      fields: [
+        {
+          type: 'mrkdwn',
+          text: '*Service*',
+        },
+        {
+          type: 'mrkdwn',
+          text: '*Status*',
+        },
+        {
+          type: 'mrkdwn',
+          text: repo,
+        },
+        {
+          type: 'mrkdwn',
+          text: `${status} :loading:`,
+        },
+      ],
+    },
+    {
+      type: 'divider',
+    },
+  ];
 
   // const sha = event === 'pull_request' ? payload.pull_request.head.sha : github.context.sha;
 

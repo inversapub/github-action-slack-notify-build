@@ -10052,7 +10052,7 @@ function buildSlackAttachments({ status, color, github }) {
           },
           {
             "type": "mrkdwn",
-            "text": status
+            "text": `${status} :loading:`
           }
         ]
       },
