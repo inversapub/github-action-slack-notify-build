@@ -10053,6 +10053,9 @@ function buildSlackMessage({ start, finish, version }, { context }) {
             type: 'mrkdwn',
             text: 'BUILDING',
           },
+          {
+            type: 'divider',
+          }
         ],
       },
     ],
@@ -10089,16 +10092,10 @@ function buildSlackMessage({ start, finish, version }, { context }) {
           },
         ],
       },
-    ]
-  }
+    ],
+  };
 
   const attachments = [];
-
-  if (start) {
-    blocks.push({
-      type: 'divider',
-    });
-  }
 
   if (finish) {
     const aux = {
