@@ -1092,8 +1092,8 @@ const { buildSlackMessage, formatChannelName } = __webpack_require__(543);
     core.info(`Will ${apiMethod} in slack`);
 
     const params = {
-      start,
-      finish,
+      start: Boolean(start),
+      finish: Boolean(finish),
       version,
     };
 
@@ -10019,7 +10019,7 @@ function buildSlackMessage({ start, finish, version }, { context }) {
   const event = eventName;
   const branch = event === 'pull_request' ? payload.pull_request.head.ref : ref.replace('refs/heads/', '');
 
-  const header = repo + (Boolean(start) ? ':loading:' : '');
+  const header = repo + (start ? ':loading:' : '');
 
   const blocks = [
     {
@@ -10050,7 +10050,7 @@ function buildSlackMessage({ start, finish, version }, { context }) {
         },
         {
           type: 'mrkdwn',
-          text: Boolean(start) ? 'BUILDING' : 'FINISHED',
+          text: start ? 'BUILDING' : 'FINISHED',
         },
       ],
     },
@@ -10058,13 +10058,13 @@ function buildSlackMessage({ start, finish, version }, { context }) {
 
   const attachments = [];
 
-  if (Boolean(start)) {
+  if (start) {
     blocks.push({
       type: 'divider',
     });
   }
 
-  if (Boolean(finish)) {
+  if (finish) {
     const aux = {
       color: '#00AA00',
       fields: [

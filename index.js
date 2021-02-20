@@ -29,8 +29,8 @@ const { buildSlackMessage, formatChannelName } = require('./src/utils');
     core.info(`Will ${apiMethod} in slack`);
 
     const params = {
-      start,
-      finish,
+      start: Boolean(start),
+      finish: Boolean(finish),
       version,
     };
 
