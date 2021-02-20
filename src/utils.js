@@ -94,7 +94,7 @@ function buildSlackMessage({ status, color, github }) {
   // ];
 }
 
-module.exports.buildSlackAttachments = buildSlackMessage;
+module.exports.buildSlackMessage = buildSlackMessage;
 
 function formatChannelName(channel) {
   return channel.replace(/[#@]/g, '');

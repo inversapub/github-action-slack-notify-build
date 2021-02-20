@@ -1097,8 +1097,7 @@ const { buildSlackMessage, formatChannelName } = __webpack_require__(543);
       as_user: true,
     };
 
-    if( status === "FINISHED" ){
-
+    if (status === 'FINISHED') {
     }
 
     const attachments = [
@@ -1113,7 +1112,6 @@ const { buildSlackMessage, formatChannelName } = __webpack_require__(543);
         ],
       },
     ];
-
 
     if (messageId) {
       message.ts = messageId;
@@ -10113,10 +10111,9 @@ function buildSlackMessage({ status, color, github }) {
   //     ts: Math.floor(Date.now() / 1000),
   //   },
   // ];
-
 }
 
-module.exports.buildSlackAttachments = buildSlackMessage;
+module.exports.buildSlackMessage = buildSlackMessage;
 
 function formatChannelName(channel) {
   return channel.replace(/[#@]/g, '');
