@@ -1096,7 +1096,7 @@ const { buildSlackAttachments, formatChannelName } = __webpack_require__(543);
         fields: [
           {
             title: 'Fixed text',
-            value: `Workflow ${workflow}`,
+            value: `Running image build`,
             short: true,
           },
         ],
