@@ -1107,7 +1107,6 @@ const { buildSlackAttachments, formatChannelName } = __webpack_require__(543);
       channel: channelId,
       blocks,
       attachments,
-      as_user: true
     };
 
     if (messageId) {

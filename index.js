@@ -44,7 +44,6 @@ const { buildSlackAttachments, formatChannelName } = require('./src/utils');
       channel: channelId,
       blocks,
       attachments,
-      as_user: true,
     };
 
     if (messageId) {
