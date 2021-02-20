@@ -1070,7 +1070,11 @@ const { buildSlackMessage, formatChannelName } = __webpack_require__(543);
   try {
     const channel = core.getInput('channel');
     const status = core.getInput('status');
-    const color = core.getInput('color');
+    const start = core.getInput('start');
+    const finish = core.getInput('finish');
+    const success = core.getInput('success');
+    const failure = core.getInput('failure');
+    const version = core.getInput('version');
     const messageId = core.getInput('message_id');
     const token = process.env.SLACK_BOT_TOKEN;
     const slack = new WebClient(token);
@@ -1081,15 +1085,20 @@ const { buildSlackMessage, formatChannelName } = __webpack_require__(543);
     }
 
     const channelId = core.getInput('channel_id') || (await lookUpChannelId({ slack, channel }));
-    
+
     if (!channelId) {
       core.setFailed(`Slack channel ${channel} could not be found.`);
       return;
     }
-    
+
     const apiMethod = Boolean(messageId) ? 'update' : 'postMessage';
 
-    const blocks = buildSlackMessage({ status, color, github });
+    const params = {
+      start, finish,
+      success, failure,
+      version
+    }
+    const blocks = buildSlackMessage(params, github);
 
     const message = {
       channel: channelId,
@@ -10016,17 +10025,15 @@ module.exports = resolveCommand;
 /***/ }),
 
 /***/ 543:
-/***/ (function(module, __unusedexports, __webpack_require__) {
+/***/ (function(module) {
 
-const { context } = __webpack_require__(469);
-
-function buildSlackMessage({ status, color, github }) {
-  const { payload, ref, workflow, eventName } = github.context;
+function buildSlackMessage({ start, finish, success, failure }, { context }) {
+  const { payload, ref, workflow, eventName } = context;
   const { owner, repo } = context.repo;
   const event = eventName;
   const branch = event === 'pull_request' ? payload.pull_request.head.ref : ref.replace('refs/heads/', '');
 
-  const header = repo + (status === 'BUILDING' ? ':loading:' : '');
+  const header = repo + (start ? ':loading:' : '');
 
   const blocks = [
     {
@@ -10063,7 +10070,7 @@ function buildSlackMessage({ status, color, github }) {
     },
   ];
 
-  if (status === 'BUILDING') {
+  if (start) {
     blocks.push({
       type: 'divider',
     });

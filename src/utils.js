@@ -1,12 +1,10 @@
-const { context } = require('@actions/github');
-
-function buildSlackMessage({ status, color, github }) {
-  const { payload, ref, workflow, eventName } = github.context;
+function buildSlackMessage({ start, finish, success, failure }, { context }) {
+  const { payload, ref, workflow, eventName } = context;
   const { owner, repo } = context.repo;
   const event = eventName;
   const branch = event === 'pull_request' ? payload.pull_request.head.ref : ref.replace('refs/heads/', '');
 
-  const header = repo + (status === 'BUILDING' ? ':loading:' : '');
+  const header = repo + (start ? ':loading:' : '');
 
   const blocks = [
     {
@@ -43,7 +41,7 @@ function buildSlackMessage({ status, color, github }) {
     },
   ];
 
-  if (status === 'BUILDING') {
+  if (start) {
     blocks.push({
       type: 'divider',
     });

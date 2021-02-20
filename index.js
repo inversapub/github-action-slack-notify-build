@@ -7,7 +7,11 @@ const { buildSlackMessage, formatChannelName } = require('./src/utils');
   try {
     const channel = core.getInput('channel');
     const status = core.getInput('status');
-    const color = core.getInput('color');
+    const start = core.getInput('start');
+    const finish = core.getInput('finish');
+    const success = core.getInput('success');
+    const failure = core.getInput('failure');
+    const version = core.getInput('version');
     const messageId = core.getInput('message_id');
     const token = process.env.SLACK_BOT_TOKEN;
     const slack = new WebClient(token);
@@ -26,7 +30,14 @@ const { buildSlackMessage, formatChannelName } = require('./src/utils');
 
     const apiMethod = Boolean(messageId) ? 'update' : 'postMessage';
 
-    const blocks = buildSlackMessage({ status, color, github });
+    const params = {
+      start,
+      finish,
+      success,
+      failure,
+      version,
+    };
+    const blocks = buildSlackMessage(params, github);
 
     const message = {
       channel: channelId,

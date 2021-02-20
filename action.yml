@@ -10,21 +10,32 @@ inputs:
   channel_id:
     description: 'The Slack channel ID. Required if no `channel` provided.'
     required: false
-  status:
+  start:
     description: 'The status to list in the update.'
-    required: true
-  color:
-    description: 'The color of the Slack attachment.'
-    required: true
-    default: '#cccccc'
+    required: false
+    default: false
+  finish:
+    description: 'The status to list in the update.'
+    required: false
+    default: false
+  success:
+    description: 'The status to list in the update.'
+    required: false
+    default: false
+  failure:
+    description: 'The status to list in the update.'
+    required: false
+    default: false
+  version:
+    description: 'Generated version'
+    required: false
+
   message_id:
     description: 'The ID of the existing Slack message to update.'
     required: false
 outputs:
   message_id:
     description: 'The unique timestamp identifier of the Slack message sent'
-  version:
-    description: 'Generated version'
 runs:
   using: 'node12'
   main: 'dist/index.js'
