@@ -1090,7 +1090,7 @@ const { buildSlackMessage, formatChannelName } = __webpack_require__(543);
       return;
     }
 
-    const apiMethod = Boolean(messageId) ? 'update' : 'postEphemeral';
+    const apiMethod = Boolean(messageId) ? 'update' : 'postMessage';
     core.debug(`Will ${apiMethod} in slack`);
 
     const params = {
@@ -1101,9 +1101,9 @@ const { buildSlackMessage, formatChannelName } = __webpack_require__(543);
       version,
     };
 
-    core.info('params' + JSON.stringify(params, null, 2));
-
     const sections = buildSlackMessage(params, github);
+
+    core.info("header [" + start + "," + finish + "] " + JSON.stringify(sections.blocks[0]));
 
     const message = {
       channel: channelId,
