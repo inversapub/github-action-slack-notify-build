@@ -1099,6 +1099,9 @@ const { buildSlackMessage, formatChannelName } = __webpack_require__(543);
       failure,
       version,
     };
+
+    core.info("params", JSON.stringify(params, null, 2));
+
     const sections = buildSlackMessage(params, github);
 
     const message = {
@@ -1107,7 +1110,7 @@ const { buildSlackMessage, formatChannelName } = __webpack_require__(543);
       as_user: true,
     };
 
-    if( sections.attachments.length > 0 ) message.attachments = sections.attachments;
+    if (sections.attachments.length > 0) message.attachments = sections.attachments;
 
     if (messageId) {
       message.ts = messageId;
@@ -10095,10 +10098,9 @@ function buildSlackMessage({ start, finish, success, failure }, { context }) {
       };
       attachments.push(aux);
     }
-    
   }
 
-  return {blocks, attachments};
+  return { blocks, attachments };
 
   // const sha = event === 'pull_request' ? payload.pull_request.head.sha : github.context.sha;
 

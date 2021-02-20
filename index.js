@@ -36,6 +36,9 @@ const { buildSlackMessage, formatChannelName } = require('./src/utils');
       failure,
       version,
     };
+
+    core.info('params', JSON.stringify(params, null, 2));
+
     const sections = buildSlackMessage(params, github);
 
     const message = {
