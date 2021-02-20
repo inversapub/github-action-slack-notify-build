@@ -1091,6 +1091,7 @@ const { buildSlackMessage, formatChannelName } = __webpack_require__(543);
     }
 
     const apiMethod = Boolean(messageId) ? 'update' : 'postMessage';
+    core.debug(`Will ${apiMethod} in slack`);
 
     const params = {
       start,
@@ -1100,7 +1101,7 @@ const { buildSlackMessage, formatChannelName } = __webpack_require__(543);
       version,
     };
 
-    core.info("params", JSON.stringify(params, null, 2));
+    core.info('params' + JSON.stringify(params, null, 2));
 
     const sections = buildSlackMessage(params, github);
 
@@ -10065,39 +10066,23 @@ function buildSlackMessage({ start, finish, success, failure }, { context }) {
     blocks.push({
       type: 'divider',
     });
-  } else {
-    if (success) {
-      const aux = {
-        color: '#00AA00',
-        fields: [
-          {
-            value: `Successfully generated version ${version}`,
-            short: true,
-          },
-        ],
-        footer_icon: 'https://github.githubassets.com/favicon.ico',
-        footer: `<https://github.com/${owner}/${repo} | ${owner}/${repo}>`,
-        ts: Math.floor(Date.now() / 1000),
-      };
+  }
 
-      attachments.push(aux);
-    }
+  if (finish) {
+    const aux = {
+      color: '#00AA00',
+      fields: [
+        {
+          value: `Successfully generated version ${version}`,
+          short: true,
+        },
+      ],
+      footer_icon: 'https://github.githubassets.com/favicon.ico',
+      footer: `<https://github.com/${owner}/${repo} | ${owner}/${repo}>`,
+      ts: Math.floor(Date.now() / 1000),
+    };
 
-    if (failure) {
-      const aux = {
-        color: '#FF0000',
-        fields: [
-          {
-            value: `Failed to generate image`,
-            short: true,
-          },
-        ],
-        footer_icon: 'https://github.githubassets.com/favicon.ico',
-        footer: `<https://github.com/${owner}/${repo} | ${owner}/${repo}>`,
-        ts: Math.floor(Date.now() / 1000),
-      };
-      attachments.push(aux);
-    }
+    attachments.push(aux);
   }
 
   return { blocks, attachments };

@@ -28,6 +28,7 @@ const { buildSlackMessage, formatChannelName } = require('./src/utils');
     }
 
     const apiMethod = Boolean(messageId) ? 'update' : 'postMessage';
+    core.debug(`Will ${apiMethod} in slack`);
 
     const params = {
       start,
@@ -37,7 +38,7 @@ const { buildSlackMessage, formatChannelName } = require('./src/utils');
       version,
     };
 
-    core.info('params', JSON.stringify(params, null, 2));
+    core.info('params' + JSON.stringify(params, null, 2));
 
     const sections = buildSlackMessage(params, github);
 
