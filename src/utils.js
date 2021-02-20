@@ -7,8 +7,7 @@ function buildSlackAttachments({ status, color, github }) {
   const branch = event === 'pull_request' ? payload.pull_request.head.ref : ref.replace('refs/heads/', '');
 
 
-  const blocks = {
-    "blocks": [
+  const blocks = [
       {
         "type": "header",
         "text": {
@@ -44,8 +43,7 @@ function buildSlackAttachments({ status, color, github }) {
       {
         "type": "divider"
       }
-    ]
-  };  
+    ];
 
   // const sha = event === 'pull_request' ? payload.pull_request.head.sha : github.context.sha;
 
