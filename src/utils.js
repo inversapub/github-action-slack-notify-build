@@ -6,40 +6,76 @@ function buildSlackMessage({ start, finish, version }, { context }) {
 
   const header = repo + (start ? ':loading:' : '');
 
-  const blocks = [
-    {
-      type: 'header',
-      text: {
-        type: 'plain_text',
-        text: header,
-        emoji: true,
+  const blocksMap = {
+    true: [
+      {
+        type: 'header',
+        text: {
+          type: 'plain_text',
+          text: `${repo} :loading:`,
+          emoji: true,
+        },
       },
-    },
-    {
-      type: 'divider',
-    },
-    {
-      type: 'section',
-      fields: [
-        {
-          type: 'mrkdwn',
-          text: '*Event*',
+      {
+        type: 'divider',
+      },
+      {
+        type: 'section',
+        fields: [
+          {
+            type: 'mrkdwn',
+            text: '*Event*',
+          },
+          {
+            type: 'mrkdwn',
+            text: '*Status*',
+          },
+          {
+            type: 'mrkdwn',
+            text: event,
+          },
+          {
+            type: 'mrkdwn',
+            text: 'BUILDING',
+          },
+        ],
+      },
+    ],
+    false: [
+      {
+        type: 'header',
+        text: {
+          type: 'plain_text',
+          text: `${repo}`,
+          emoji: true,
         },
-        {
-          type: 'mrkdwn',
-          text: '*Status*',
-        },
-        {
-          type: 'mrkdwn',
-          text: event,
-        },
-        {
-          type: 'mrkdwn',
-          text: start ? 'BUILDING' : 'FINISHED',
-        },
-      ],
-    },
-  ];
+      },
+      {
+        type: 'divider',
+      },
+      {
+        type: 'section',
+        fields: [
+          {
+            type: 'mrkdwn',
+            text: '*Event*',
+          },
+          {
+            type: 'mrkdwn',
+            text: '*Status*',
+          },
+          {
+            type: 'mrkdwn',
+            text: event,
+          },
+          {
+            type: 'mrkdwn',
+            text: 'FINISHED',
+          },
+        ],
+      },
+    ],
+  };
 
   const attachments = [];
 
@@ -66,7 +102,7 @@ function buildSlackMessage({ start, finish, version }, { context }) {
     attachments.push(aux);
   }
 
-  return { blocks, attachments };
+  return { blocks: blocksMap[start], attachments };
 
   // const sha = event === 'pull_request' ? payload.pull_request.head.sha : github.context.sha;
 
