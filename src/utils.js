@@ -1,17 +1,19 @@
 const { context } = require('@actions/github');
 
-function buildSlackAttachments({ status, color, github }) {
+function buildSlackMessage({ status, color, github }) {
   const { payload, ref, workflow, eventName } = github.context;
   const { owner, repo } = context.repo;
   const event = eventName;
   const branch = event === 'pull_request' ? payload.pull_request.head.ref : ref.replace('refs/heads/', '');
+
+  const header = repo + (status === 'BUILDING' ? ':loading:' : '');
 
   const blocks = [
     {
       type: 'header',
       text: {
         type: 'plain_text',
-        text: 'Build Pipeline',
+        text: header,
         emoji: true,
       },
     },
@@ -23,7 +25,7 @@ function buildSlackAttachments({ status, color, github }) {
       fields: [
         {
           type: 'mrkdwn',
-          text: '*Service*',
+          text: '*Event*',
         },
         {
           type: 'mrkdwn',
@@ -31,18 +33,23 @@ function buildSlackAttachments({ status, color, github }) {
         },
         {
           type: 'mrkdwn',
-          text: repo,
+          text: event,
         },
         {
           type: 'mrkdwn',
-          text: `${status} :loading:`,
+          text: status,
         },
       ],
     },
-    {
-      type: 'divider',
-    },
   ];
+
+  if (status === 'BUILDING') {
+    blocks.push({
+      type: 'divider',
+    });
+  }
+
+  return blocks;
 
   // const sha = event === 'pull_request' ? payload.pull_request.head.sha : github.context.sha;
 
@@ -85,11 +92,9 @@ function buildSlackAttachments({ status, color, github }) {
   //     ts: Math.floor(Date.now() / 1000),
   //   },
   // ];
-
-  return blocks;
 }
 
-module.exports.buildSlackAttachments = buildSlackAttachments;
+module.exports.buildSlackAttachments = buildSlackMessage;
 
 function formatChannelName(channel) {
   return channel.replace(/[#@]/g, '');

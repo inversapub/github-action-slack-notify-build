@@ -23,6 +23,8 @@ inputs:
 outputs:
   message_id:
     description: 'The unique timestamp identifier of the Slack message sent'
+  version:
+    description: 'Generated version'
 runs:
   using: 'node12'
   main: 'dist/index.js'

@@ -1064,7 +1064,7 @@ exports.issueCommand = issueCommand;
 const core = __webpack_require__(470);
 const github = __webpack_require__(469);
 const { WebClient } = __webpack_require__(114);
-const { buildSlackAttachments, formatChannelName } = __webpack_require__(543);
+const { buildSlackMessage, formatChannelName } = __webpack_require__(543);
 
 (async () => {
   try {
@@ -1080,7 +1080,7 @@ const { buildSlackAttachments, formatChannelName } = __webpack_require__(543);
       return;
     }
 
-    const blocks = buildSlackAttachments({ status, color, github });
+    const blocks = buildSlackMessage({ status, color, github });
     const channelId = core.getInput('channel_id') || (await lookUpChannelId({ slack, channel }));
 
     if (!channelId) {
@@ -1089,6 +1089,17 @@ const { buildSlackAttachments, formatChannelName } = __webpack_require__(543);
     }
 
     const apiMethod = Boolean(messageId) ? 'update' : 'postMessage';
+
+    const message = {
+      channel: channelId,
+      blocks,
+      attachments,
+      as_user: true,
+    };
+
+    if( status === "FINISHED" ){
+
+    }
 
     const attachments = [
       {
@@ -1103,12 +1114,6 @@ const { buildSlackAttachments, formatChannelName } = __webpack_require__(543);
       },
     ];
 
-    const message = {
-      channel: channelId,
-      blocks,
-      attachments,
-      as_user: true,
-    };
 
     if (messageId) {
       message.ts = messageId;
@@ -10016,50 +10021,56 @@ module.exports = resolveCommand;
 
 const { context } = __webpack_require__(469);
 
-function buildSlackAttachments({ status, color, github }) {
+function buildSlackMessage({ status, color, github }) {
   const { payload, ref, workflow, eventName } = github.context;
   const { owner, repo } = context.repo;
   const event = eventName;
   const branch = event === 'pull_request' ? payload.pull_request.head.ref : ref.replace('refs/heads/', '');
 
+  const header = repo + (status === 'BUILDING' ? ':loading:' : '');
 
   const blocks = [
-      {
-        "type": "header",
-        "text": {
-          "type": "plain_text",
-          "text": "Build Pipeline",
-          "emoji": true
-        }
+    {
+      type: 'header',
+      text: {
+        type: 'plain_text',
+        text: header,
+        emoji: true,
       },
-      {
-        "type": "divider"
-      },
-      {
-        "type": "section",
-        "fields": [
-          {
-            "type": "mrkdwn",
-            "text": "*Service*"
-          },
-          {
-            "type": "mrkdwn",
-            "text": "*Status*"
-          },
-          {
-            "type": "mrkdwn",
-            "text": repo
-          },
-          {
-            "type": "mrkdwn",
-            "text": `${status} :loading:`
-          }
-        ]
-      },
-      {
-        "type": "divider"
-      }
-    ];
+    },
+    {
+      type: 'divider',
+    },
+    {
+      type: 'section',
+      fields: [
+        {
+          type: 'mrkdwn',
+          text: '*Event*',
+        },
+        {
+          type: 'mrkdwn',
+          text: '*Status*',
+        },
+        {
+          type: 'mrkdwn',
+          text: event,
+        },
+        {
+          type: 'mrkdwn',
+          text: status,
+        },
+      ],
+    },
+  ];
+
+  if (status === 'BUILDING') {
+    blocks.push({
+      type: 'divider',
+    });
+  }
+
+  return blocks;
 
   // const sha = event === 'pull_request' ? payload.pull_request.head.sha : github.context.sha;
 
@@ -10103,10 +10114,9 @@ function buildSlackAttachments({ status, color, github }) {
   //   },
   // ];
 
-  return blocks;
 }
 
-module.exports.buildSlackAttachments = buildSlackAttachments;
+module.exports.buildSlackAttachments = buildSlackMessage;
 
 function formatChannelName(channel) {
   return channel.replace(/[#@]/g, '');

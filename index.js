@@ -1,7 +1,7 @@
 const core = require('@actions/core');
 const github = require('@actions/github');
 const { WebClient } = require('@slack/web-api');
-const { buildSlackAttachments, formatChannelName } = require('./src/utils');
+const { buildSlackMessage, formatChannelName } = require('./src/utils');
 
 (async () => {
   try {
@@ -17,7 +17,7 @@ const { buildSlackAttachments, formatChannelName } = require('./src/utils');
       return;
     }
 
-    const blocks = buildSlackAttachments({ status, color, github });
+    const blocks = buildSlackMessage({ status, color, github });
     const channelId = core.getInput('channel_id') || (await lookUpChannelId({ slack, channel }));
 
     if (!channelId) {
@@ -26,6 +26,16 @@ const { buildSlackAttachments, formatChannelName } = require('./src/utils');
     }
 
     const apiMethod = Boolean(messageId) ? 'update' : 'postMessage';
+
+    const message = {
+      channel: channelId,
+      blocks,
+      attachments,
+      as_user: true,
+    };
+
+    if (status === 'FINISHED') {
+    }
 
     const attachments = [
       {
@@ -39,13 +49,6 @@ const { buildSlackAttachments, formatChannelName } = require('./src/utils');
         ],
       },
     ];
-
-    const message = {
-      channel: channelId,
-      blocks,
-      attachments,
-      as_user: true,
-    };
 
     if (messageId) {
       message.ts = messageId;
