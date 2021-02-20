@@ -1071,8 +1071,6 @@ const { buildSlackMessage, formatChannelName } = __webpack_require__(543);
     const channel = core.getInput('channel');
     const start = core.getInput('start');
     const finish = core.getInput('finish');
-    const success = core.getInput('success');
-    const failure = core.getInput('failure');
     const version = core.getInput('version');
     const messageId = core.getInput('message_id');
     const token = process.env.SLACK_BOT_TOKEN;
@@ -1091,19 +1089,17 @@ const { buildSlackMessage, formatChannelName } = __webpack_require__(543);
     }
 
     const apiMethod = Boolean(messageId) ? 'update' : 'postMessage';
-    core.debug(`Will ${apiMethod} in slack`);
+    core.info(`Will ${apiMethod} in slack`);
 
     const params = {
       start,
       finish,
-      success,
-      failure,
       version,
     };
 
     const sections = buildSlackMessage(params, github);
 
-    core.info("header [" + start + "," + finish + "] " + JSON.stringify(sections.blocks[0]));
+    core.info('header [' + start + ',' + finish + '] ' + JSON.stringify(sections.blocks[0]));
 
     const message = {
       channel: channelId,
@@ -10023,7 +10019,7 @@ function buildSlackMessage({ start, finish, version }, { context }) {
   const event = eventName;
   const branch = event === 'pull_request' ? payload.pull_request.head.ref : ref.replace('refs/heads/', '');
 
-  const header = repo + (start ? ':loading:' : '');
+  const header = `${repo} -> s: ${start}, f: ${finish}`;
 
   const blocks = [
     {

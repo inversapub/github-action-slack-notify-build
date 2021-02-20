@@ -4,7 +4,7 @@ function buildSlackMessage({ start, finish, version }, { context }) {
   const event = eventName;
   const branch = event === 'pull_request' ? payload.pull_request.head.ref : ref.replace('refs/heads/', '');
 
-  const header = repo + (start ? ':loading:' : '');
+  const header = `${repo} -> s: ${start}, f: ${finish}`;
 
   const blocks = [
     {

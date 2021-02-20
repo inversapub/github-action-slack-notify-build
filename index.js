@@ -8,8 +8,6 @@ const { buildSlackMessage, formatChannelName } = require('./src/utils');
     const channel = core.getInput('channel');
     const start = core.getInput('start');
     const finish = core.getInput('finish');
-    const success = core.getInput('success');
-    const failure = core.getInput('failure');
     const version = core.getInput('version');
     const messageId = core.getInput('message_id');
     const token = process.env.SLACK_BOT_TOKEN;
@@ -28,13 +26,11 @@ const { buildSlackMessage, formatChannelName } = require('./src/utils');
     }
 
     const apiMethod = Boolean(messageId) ? 'update' : 'postMessage';
-    core.debug(`Will ${apiMethod} in slack`);
+    core.info(`Will ${apiMethod} in slack`);
 
     const params = {
       start,
       finish,
-      success,
-      failure,
       version,
     };
 
