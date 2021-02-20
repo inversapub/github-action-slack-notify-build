@@ -1099,30 +1099,15 @@ const { buildSlackMessage, formatChannelName } = __webpack_require__(543);
       failure,
       version,
     };
-    const blocks = buildSlackMessage(params, github);
+    const sections = buildSlackMessage(params, github);
 
     const message = {
       channel: channelId,
-      blocks,
-      // attachments,
+      blocks: sections.blocks,
       as_user: true,
     };
 
-    // if (status === 'FINISHED') {
-    // }
-
-    // const attachments = [
-    //   {
-    //     color,
-    //     fields: [
-    //       {
-    //         title: 'Fixed text',
-    //         value: `Running image build`,
-    //         short: true,
-    //       },
-    //     ],
-    //   },
-    // ];
+    if( sections.attachments.length > 0 ) message.attachments = sections.attachments;
 
     if (messageId) {
       message.ts = messageId;
@@ -10065,19 +10050,55 @@ function buildSlackMessage({ start, finish, success, failure }, { context }) {
         },
         {
           type: 'mrkdwn',
-          text: (start ? 'BUILDING' : 'FINISHED'),
+          text: start ? 'BUILDING' : 'FINISHED',
         },
       ],
     },
   ];
 
+  const attachments = [];
+
   if (start) {
     blocks.push({
       type: 'divider',
     });
+  } else {
+    if (success) {
+      const aux = {
+        color: '#00AA00',
+        fields: [
+          {
+            value: `Successfully generated version ${version}`,
+            short: true,
+          },
+        ],
+        footer_icon: 'https://github.githubassets.com/favicon.ico',
+        footer: `<https://github.com/${owner}/${repo} | ${owner}/${repo}>`,
+        ts: Math.floor(Date.now() / 1000),
+      };
+
+      attachments.push(aux);
+    }
+
+    if (failure) {
+      const aux = {
+        color: '#FF0000',
+        fields: [
+          {
+            value: `Failed to generate image`,
+            short: true,
+          },
+        ],
+        footer_icon: 'https://github.githubassets.com/favicon.ico',
+        footer: `<https://github.com/${owner}/${repo} | ${owner}/${repo}>`,
+        ts: Math.floor(Date.now() / 1000),
+      };
+      attachments.push(aux);
+    }
+    
   }
 
-  return blocks;
+  return {blocks, attachments};
 
   // const sha = event === 'pull_request' ? payload.pull_request.head.sha : github.context.sha;
 

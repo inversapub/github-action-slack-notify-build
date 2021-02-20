@@ -41,13 +41,48 @@ function buildSlackMessage({ start, finish, success, failure }, { context }) {
     },
   ];
 
+  const attachments = [];
+
   if (start) {
     blocks.push({
       type: 'divider',
     });
+  } else {
+    if (success) {
+      const aux = {
+        color: '#00AA00',
+        fields: [
+          {
+            value: `Successfully generated version ${version}`,
+            short: true,
+          },
+        ],
+        footer_icon: 'https://github.githubassets.com/favicon.ico',
+        footer: `<https://github.com/${owner}/${repo} | ${owner}/${repo}>`,
+        ts: Math.floor(Date.now() / 1000),
+      };
+
+      attachments.push(aux);
+    }
+
+    if (failure) {
+      const aux = {
+        color: '#FF0000',
+        fields: [
+          {
+            value: `Failed to generate image`,
+            short: true,
+          },
+        ],
+        footer_icon: 'https://github.githubassets.com/favicon.ico',
+        footer: `<https://github.com/${owner}/${repo} | ${owner}/${repo}>`,
+        ts: Math.floor(Date.now() / 1000),
+      };
+      attachments.push(aux);
+    }
   }
 
-  return blocks;
+  return { blocks, attachments };
 
   // const sha = event === 'pull_request' ? payload.pull_request.head.sha : github.context.sha;
 

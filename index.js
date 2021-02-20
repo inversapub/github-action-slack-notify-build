@@ -36,30 +36,15 @@ const { buildSlackMessage, formatChannelName } = require('./src/utils');
       failure,
       version,
     };
-    const blocks = buildSlackMessage(params, github);
+    const sections = buildSlackMessage(params, github);
 
     const message = {
       channel: channelId,
-      blocks,
-      // attachments,
+      blocks: sections.blocks,
       as_user: true,
     };
 
-    // if (status === 'FINISHED') {
-    // }
-
-    // const attachments = [
-    //   {
-    //     color,
-    //     fields: [
-    //       {
-    //         title: 'Fixed text',
-    //         value: `Running image build`,
-    //         short: true,
-    //       },
-    //     ],
-    //   },
-    // ];
+    if (sections.attachments.length > 0) message.attachments = sections.attachments;
 
     if (messageId) {
       message.ts = messageId;
