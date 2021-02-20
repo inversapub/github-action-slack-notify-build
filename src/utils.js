@@ -4,7 +4,7 @@ function buildSlackMessage({ start, finish, version }, { context }) {
   const event = eventName;
   const branch = event === 'pull_request' ? payload.pull_request.head.ref : ref.replace('refs/heads/', '');
 
-  const header = `${repo} -> s: ${start}, f: ${finish}`;
+  const header = repo + (Boolean(start) ? ':loading:' : '');
 
   const blocks = [
     {
@@ -35,7 +35,7 @@ function buildSlackMessage({ start, finish, version }, { context }) {
         },
         {
           type: 'mrkdwn',
-          text: start ? 'BUILDING' : 'FINISHED',
+          text: Boolean(start) ? 'BUILDING' : 'FINISHED',
         },
       ],
     },
@@ -43,13 +43,13 @@ function buildSlackMessage({ start, finish, version }, { context }) {
 
   const attachments = [];
 
-  if (start) {
+  if (Boolean(start)) {
     blocks.push({
       type: 'divider',
     });
   }
 
-  if (finish) {
+  if (Boolean(finish)) {
     const aux = {
       color: '#00AA00',
       fields: [
