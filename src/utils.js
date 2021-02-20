@@ -6,6 +6,47 @@ function buildSlackAttachments({ status, color, github }) {
   const event = eventName;
   const branch = event === 'pull_request' ? payload.pull_request.head.ref : ref.replace('refs/heads/', '');
 
+
+  const blocks = {
+    "blocks": [
+      {
+        "type": "header",
+        "text": {
+          "type": "plain_text",
+          "text": "Build Pipeline",
+          "emoji": true
+        }
+      },
+      {
+        "type": "divider"
+      },
+      {
+        "type": "section",
+        "fields": [
+          {
+            "type": "mrkdwn",
+            "text": "*Service*"
+          },
+          {
+            "type": "mrkdwn",
+            "text": "*Status*"
+          },
+          {
+            "type": "mrkdwn",
+            "text": repo
+          },
+          {
+            "type": "mrkdwn",
+            "text": status
+          }
+        ]
+      },
+      {
+        "type": "divider"
+      }
+    ]
+  };  
+
   const sha = event === 'pull_request' ? payload.pull_request.head.sha : github.context.sha;
 
   const referenceLink =
@@ -21,32 +62,34 @@ function buildSlackAttachments({ status, color, github }) {
           short: true,
         };
 
-  return [
-    {
-      color,
-      fields: [
-        {
-          title: 'Action',
-          value: `<https://github.com/${owner}/${repo}/commit/${sha}/checks | ${workflow}>`,
-          short: true,
-        },
-        {
-          title: 'Status',
-          value: status,
-          short: true,
-        },
-        referenceLink,
-        {
-          title: 'Event',
-          value: event,
-          short: true,
-        },
-      ],
-      footer_icon: 'https://github.githubassets.com/favicon.ico',
-      footer: `<https://github.com/${owner}/${repo} | ${owner}/${repo}>`,
-      ts: Math.floor(Date.now() / 1000),
-    },
-  ];
+  // return [
+  //   {
+  //     color,
+  //     fields: [
+  //       {
+  //         title: 'Action',
+  //         value: `<https://github.com/${owner}/${repo}/commit/${sha}/checks | ${workflow}>`,
+  //         short: true,
+  //       },
+  //       {
+  //         title: 'Status',
+  //         value: status,
+  //         short: true,
+  //       },
+  //       referenceLink,
+  //       {
+  //         title: 'Event',
+  //         value: event,
+  //         short: true,
+  //       },
+  //     ],
+  //     footer_icon: 'https://github.githubassets.com/favicon.ico',
+  //     footer: `<https://github.com/${owner}/${repo} | ${owner}/${repo}>`,
+  //     ts: Math.floor(Date.now() / 1000),
+  //   },
+  // ];
+
+  return blocks;
 }
 
 module.exports.buildSlackAttachments = buildSlackAttachments;

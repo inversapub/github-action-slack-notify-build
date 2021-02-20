@@ -27,16 +27,16 @@ const { buildSlackAttachments, formatChannelName } = require('./src/utils');
 
     const apiMethod = Boolean(messageId) ? 'update' : 'postMessage';
 
-    const args = {
+    const message = {
       channel: channelId,
       attachments,
     };
 
     if (messageId) {
-      args.ts = messageId;
+      message.ts = messageId;
     }
 
-    const response = await slack.chat[apiMethod](args);
+    const response = await slack.chat[apiMethod](message);
 
     core.setOutput('message_id', response.ts);
   } catch (error) {
