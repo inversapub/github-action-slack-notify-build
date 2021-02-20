@@ -27,9 +27,23 @@ const { buildSlackAttachments, formatChannelName } = require('./src/utils');
 
     const apiMethod = Boolean(messageId) ? 'update' : 'postMessage';
 
+    const attachments = [
+      {
+        color,
+        fields: [
+          {
+            title: 'Fixed text',
+            value: `Workflow ${workflow}`,
+            short: true,
+          },
+        ],
+      },
+    ];
+
     const message = {
       channel: channelId,
       blocks,
+      attachments
     };
 
     if (messageId) {
@@ -52,7 +66,7 @@ async function lookUpChannelId({ slack, channel }) {
   // Use only the first two parameters to get an async iterator.
   for await (const page of slack.paginate('conversations.list', { types: 'public_channel, private_channel' })) {
     // You can inspect each page, find your result, and stop the loop with a `break` statement
-    const match = page.channels.find(c => c.name === formattedChannel);
+    const match = page.channels.find((c) => c.name === formattedChannel);
     if (match) {
       result = match.id;
       break;
