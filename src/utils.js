@@ -38,10 +38,10 @@ function buildSlackMessage({ start, finish, version }, { context }) {
             type: 'mrkdwn',
             text: 'BUILDING',
           },
-          {
-            type: 'divider',
-          },
         ],
+      },
+      {
+        type: 'divider',
       },
     ],
     false: [
