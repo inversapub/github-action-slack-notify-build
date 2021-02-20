@@ -6,7 +6,6 @@ const { buildSlackMessage, formatChannelName } = require('./src/utils');
 (async () => {
   try {
     const channel = core.getInput('channel');
-    const status = core.getInput('status');
     const start = core.getInput('start');
     const finish = core.getInput('finish');
     const success = core.getInput('success');

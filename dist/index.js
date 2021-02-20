@@ -1069,7 +1069,6 @@ const { buildSlackMessage, formatChannelName } = __webpack_require__(543);
 (async () => {
   try {
     const channel = core.getInput('channel');
-    const status = core.getInput('status');
     const start = core.getInput('start');
     const finish = core.getInput('finish');
     const success = core.getInput('success');
@@ -1094,10 +1093,12 @@ const { buildSlackMessage, formatChannelName } = __webpack_require__(543);
     const apiMethod = Boolean(messageId) ? 'update' : 'postMessage';
 
     const params = {
-      start, finish,
-      success, failure,
-      version
-    }
+      start,
+      finish,
+      success,
+      failure,
+      version,
+    };
     const blocks = buildSlackMessage(params, github);
 
     const message = {
@@ -10064,7 +10065,7 @@ function buildSlackMessage({ start, finish, success, failure }, { context }) {
         },
         {
           type: 'mrkdwn',
-          text: status,
+          text: (start ? 'BUILDING' : 'FINISHED'),
         },
       ],
     },

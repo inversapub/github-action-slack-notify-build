@@ -35,7 +35,7 @@ function buildSlackMessage({ start, finish, success, failure }, { context }) {
         },
         {
           type: 'mrkdwn',
-          text: status,
+          text: start ? 'BUILDING' : 'FINISHED',
         },
       ],
     },
