@@ -1,7 +1,7 @@
 const core = require('@actions/core');
 const github = require('@actions/github');
 const { WebClient } = require('@slack/web-api');
-const { buildSlackMessage } = require('./src/utils');
+// const { buildSlackMessage } = require('./src/utils');
 const { MessageBuilder } = require('./slack-lib');
 
 (async () => {

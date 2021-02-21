@@ -1066,7 +1066,7 @@ exports.issueCommand = issueCommand;
 const core = __webpack_require__(470);
 const github = __webpack_require__(469);
 const { WebClient } = __webpack_require__(114);
-const { buildSlackMessage } = __webpack_require__(543);
+// const { buildSlackMessage } = require('./src/utils');
 const { MessageBuilder } = __webpack_require__(641);
 
 (async () => {
@@ -1105,12 +1105,15 @@ const { MessageBuilder } = __webpack_require__(641);
 
     const m = new MessageBuilder(opts);
 
-    if( start ) {
+    if (start) {
       m.addHeader(github.context.repo);
-      m.addDiv()
-      const section = m.createSection()
-        .addField("Event")      .addField("Status")
-        .addField("push")       .addField("BUILDING :loading:")
+      m.addDiv();
+      const section = m
+        .createSection()
+        .addField('Event')
+        .addField('Status')
+        .addField('push')
+        .addField('BUILDING :loading:');
       m.addSection(section);
       m.addDiv();
     }
@@ -10016,89 +10019,6 @@ function resolveCommand(parsed) {
 }
 
 module.exports = resolveCommand;
-
-
-/***/ }),
-
-/***/ 543:
-/***/ (function(module) {
-
-function buildSlackMessage({ start, finish, version }, { context }) {
-  const { payload, ref, workflow, eventName } = context;
-  const { owner, repo } = context.repo;
-  const event = eventName;
-  const branch = event === 'pull_request' ? payload.pull_request.head.ref : ref.replace('refs/heads/', '');
-
-  const header = repo + (start ? ':loading:' : '');
-
-  const blocks = [
-    {
-      type: 'header',
-      text: {
-        type: 'plain_text',
-        text: header,
-        emoji: true,
-      },
-    },
-    {
-      type: 'divider',
-    },
-    {
-      type: 'section',
-      fields: [
-        {
-          type: 'mrkdwn',
-          text: '*Event*',
-        },
-        {
-          type: 'mrkdwn',
-          text: '*Status*',
-        },
-        {
-          type: 'mrkdwn',
-          text: event,
-        },
-        {
-          type: 'mrkdwn',
-          text: start ? 'BUILDING' : 'FINISHED',
-        },
-      ],
-    },
-  ];
-
-  const attachments = [];
-
-  if (start) {
-    blocks.push({
-      type: 'divider',
-    });
-  }
-
-  if (finish) {
-    const aux = {
-      color: '#00AA00',
-      fields: [
-        {
-          value: `Successfully generated version ${version}`,
-          short: true,
-        },
-      ],
-      footer_icon: 'https://github.githubassets.com/favicon.ico',
-      footer: `<https://github.com/${owner}/${repo} | ${owner}/${repo}>`,
-      ts: Math.floor(Date.now() / 1000),
-    };
-
-    attachments.push(aux);
-  }
-
-  return { blocks, attachments };
-
-}
-
-module.exports.buildSlackMessage = buildSlackMessage;
-
-
-module.exports.formatChannelName = formatChannelName;
 
 
 /***/ }),

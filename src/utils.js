@@ -70,5 +70,3 @@ function buildSlackMessage({ start, finish, version }, { context }) {
 }
 
 module.exports.buildSlackMessage = buildSlackMessage;
-
-module.exports.formatChannelName = formatChannelName;
