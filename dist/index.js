@@ -1085,8 +1085,6 @@ const { MessageBuilder, COLORS } = __webpack_require__(641);
     const repoName = `${owner}/${repo}`;
     const repoUrl = `https://github.com/${repoName}`;
 
-    core.info('core: ' + JSON.stringify(core));
-
     if (!channel && !core.getInput('channel_id')) {
       core.setFailed(`You must provider either a 'channel' or a 'channel_id'.`);
       return;
@@ -1147,12 +1145,12 @@ const { MessageBuilder, COLORS } = __webpack_require__(641);
         .addField(github.context.actor)
         .addField(failure ? 'FAILED' : 'SUCCESS');
       m.addSection(section);
-      const att = m.createAttachment().setFooter('https://github.githubassets.com/favicon.ico', repoName);
+      const att = m.createAttachment().setFooter('https://github.githubassets.com/favicon.ico', `<${repoUrl} | ${repoName}>`);
 
       if (failure) {
         att
           .addField('Image publishing failure')
-          .addField(`<${repoUrl}/runs/${github.context.runId}?check_suite_focus=true> | Check workflow error`);
+          .addField(`<${repoUrl}/actions | Check last workflow error`);
         att.color = COLORS.DANGER;
       } else {
         att.addField('Successfully published version `' + version + '`');
@@ -11658,7 +11656,6 @@ class MessageBuilder {
   }
 
   addAttachment(attachment){
-    console.log("att", JSON.stringify(attachment));
     const obj = {
       color: attachment.color,
       ts: Math.floor(Date.now() / 1000),
