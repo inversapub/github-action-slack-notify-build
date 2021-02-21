@@ -26,10 +26,10 @@ const { MessageBuilder, COLORS } = require('./slack-lib');
     const shortCommit = head_commit.id.substring(0, 8);
 
     const re = /pull request #(\d)/;
-    const match = message.match(re);
+    const match = head_commit.message.match(re);
     const link = `<${repoUrl}/pull/${match[1]}|${match[0]}>`;
 
-    const newMessage = message.replace(re, link);
+    const newMessage = head_commit.message.replace(re, link);
 
     if (!channel && !core.getInput('channel_id')) {
       core.setFailed(`You must provider either a 'channel' or a 'channel_id'.`);
