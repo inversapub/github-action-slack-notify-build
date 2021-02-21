@@ -1072,8 +1072,9 @@ const { MessageBuilder, COLORS } = __webpack_require__(641);
 (async () => {
   try {
     const channel = core.getInput('channel');
-    const start = core.getInput('start') === 'true';
-    const finish = core.getInput('finish') === 'true';
+    const start = core.getInput('start') == 'true';
+    const finish = core.getInput('finish') == 'true';
+    const failure = core.getInput('failure') == 'true';
     const version = core.getInput('version');
     const messageId = core.getInput('message_id');
     const token = process.env.SLACK_BOT_TOKEN;
@@ -1136,9 +1137,13 @@ const { MessageBuilder, COLORS } = __webpack_require__(641);
       m.addSection(section);
       const att = m
         .createAttachment()
-        .addField(`Successfully generated: ${version}`)
-        .setFooter('https://github.githubassets.com/favicon.ico', `${github.context.repo.owner}/${github.context.repo.repo}`);
-      att.color = COLORS.SUCCESS;
+        .addField(`Successfully generated: ${version} -- ${failure}`)
+        .setFooter(
+          'https://github.githubassets.com/favicon.ico',
+          `${github.context.repo.owner}/${github.context.repo.repo}`
+        );
+
+      att.color = failure ? COLORS.DANGER : COLORS.SUCCESS;
       m.addAttachment(att);
     }
 
@@ -11640,23 +11645,23 @@ class MessageBuilder {
 
 }
 
-const m = new MessageBuilder({otherOpt: true});
-m.channel = "#channel"
-m.addHeader("this is the header")
-m.addDiv()
-const section = m.createSection()
-  .addField("field 1")
-  .addField("field2");
-m.addSection(section);
+// const m = new MessageBuilder({otherOpt: true});
+// m.channel = "#channel"
+// m.addHeader("this is the header")
+// m.addDiv()
+// const section = m.createSection()
+//   .addField("field 1")
+//   .addField("field2");
+// m.addSection(section);
 
-const att = m.createAttachment()
-  .addField("Version: 111222")
-  .setFooter('https://github.githubassets.com/favicon.ico', "repositorio");
-att.color = COLORS.SUCCESS;
+// const att = m.createAttachment()
+//   .addField("Version: 111222")
+//   .setFooter('https://github.githubassets.com/favicon.ico', "repositorio");
+// att.color = COLORS.SUCCESS;
 
-m.addAttachment(att);
+// m.addAttachment(att);
 
-console.log(JSON.stringify(m.message, null, 2));
+// console.log(JSON.stringify(m.message, null, 2));
 
 
 /***/ }),

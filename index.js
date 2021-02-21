@@ -7,8 +7,9 @@ const { MessageBuilder, COLORS } = require('./slack-lib');
 (async () => {
   try {
     const channel = core.getInput('channel');
-    const start = core.getInput('start') === 'true';
-    const finish = core.getInput('finish') === 'true';
+    const start = core.getInput('start') == 'true';
+    const finish = core.getInput('finish') == 'true';
+    const failure = core.getInput('failure') == 'true';
     const version = core.getInput('version');
     const messageId = core.getInput('message_id');
     const token = process.env.SLACK_BOT_TOKEN;
@@ -71,12 +72,13 @@ const { MessageBuilder, COLORS } = require('./slack-lib');
       m.addSection(section);
       const att = m
         .createAttachment()
-        .addField(`Successfully generated: ${version}`)
+        .addField(`Successfully generated: ${version} -- ${failure}`)
         .setFooter(
           'https://github.githubassets.com/favicon.ico',
           `${github.context.repo.owner}/${github.context.repo.repo}`
         );
-      att.color = COLORS.SUCCESS;
+
+      att.color = failure ? COLORS.DANGER : COLORS.SUCCESS;
       m.addAttachment(att);
     }
 
