@@ -1072,15 +1072,15 @@ const { MessageBuilder } = __webpack_require__(641);
 (async () => {
   try {
     const channel = core.getInput('channel');
-    const start = core.getInput('start');
-    const finish = core.getInput('finish');
+    const start = core.getInput('start') === 'true';
+    const finish = core.getInput('finish') === 'true';
     const version = core.getInput('version');
     const messageId = core.getInput('message_id');
     const token = process.env.SLACK_BOT_TOKEN;
     const slack = new WebClient(token);
 
-    core.info(`s: ${start}, ${typeof(start)}`);
-    core.info(`f: ${finish}, ${typeof(finish)}`);
+    core.info(`s: ${start}, ${typeof start}`);
+    core.info(`f: ${finish}, ${typeof finish}`);
 
     if (!channel && !core.getInput('channel_id')) {
       core.setFailed(`You must provider either a 'channel' or a 'channel_id'.`);

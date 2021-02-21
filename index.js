@@ -7,8 +7,8 @@ const { MessageBuilder } = require('./slack-lib');
 (async () => {
   try {
     const channel = core.getInput('channel');
-    const start = core.getInput('start');
-    const finish = core.getInput('finish');
+    const start = core.getInput('start') === 'true';
+    const finish = core.getInput('finish') === 'true';
     const version = core.getInput('version');
     const messageId = core.getInput('message_id');
     const token = process.env.SLACK_BOT_TOKEN;
