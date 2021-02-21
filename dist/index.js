@@ -1122,7 +1122,7 @@ const { MessageBuilder, COLORS } = __webpack_require__(641);
       m.addDiv();
       const section = m
         .createSection()
-        .addField(`Commit <${head_commit.url} | ${shortCommit}`)
+        .addField(`Commit <${head_commit.url} | ${shortCommit}>`)
         .addField('Status')
         .addField(head_commit.message)
         .addField('BUILDING :loading:');
@@ -1145,7 +1145,7 @@ const { MessageBuilder, COLORS } = __webpack_require__(641);
       m.addDiv();
       const section = m
         .createSection()
-        .addField(`Commit <${head_commit.url} | ${shortCommit}`)
+        .addField(`Commit <${head_commit.url} | ${shortCommit}>`)
         .addField('Status')
         .addField(head_commit.message)
         .addField(failure ? 'FAILED' : 'SUCCESS');
