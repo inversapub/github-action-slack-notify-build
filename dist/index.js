@@ -1084,7 +1084,7 @@ const { MessageBuilder, COLORS } = __webpack_require__(641);
     const { owner, repo } = github.context.repo;
     const repoName = `${owner}/${repo}`;
     const repoUrl = `https://github.com/${repoName}`;
-    const { eventName, payload } = github.context;
+    const { eventName, payload, ref } = github.context;
 
     const branch = eventName === 'pull_request' ? payload.pull_request.head.ref : ref.replace('refs/heads/', '');
 

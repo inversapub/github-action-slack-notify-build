@@ -19,7 +19,7 @@ const { MessageBuilder, COLORS } = require('./slack-lib');
     const { owner, repo } = github.context.repo;
     const repoName = `${owner}/${repo}`;
     const repoUrl = `https://github.com/${repoName}`;
-    const { eventName, payload } = github.context;
+    const { eventName, payload, ref } = github.context;
 
     const branch = eventName === 'pull_request' ? payload.pull_request.head.ref : ref.replace('refs/heads/', '');
 
