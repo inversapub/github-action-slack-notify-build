@@ -1127,14 +1127,17 @@ const { MessageBuilder } = __webpack_require__(641);
       m.channel = channelId;
       m.addHeader(github.context.repo.repo);
       m.addDiv();
-      const section = m
-        .createSection()
+      const section = m.createSection()
         .addField('Event')
         .addField('Status')
         .addField('push')
         .addField('SUCCESS');
       m.addSection(section);
-      m.addDiv();
+      const att = m.createAttachment()
+        .addField("Version: 111222")
+        .setFooter('https://github.githubassets.com/favicon.ico', "repositorio");
+      att.color = COLORS.SUCCESS;
+      m.addAttachment(att);
     }
 
     const message = m.message;
@@ -11542,6 +11545,14 @@ const _defaults = {
   as_user: true,
 };
 
+const COLORS = {
+  SUCCESS: '#00AA00',
+  DANGER: '#FF0000',
+  WARN: '#FFBF00',
+  NEUTRAL: '#CCCCCC',
+  INV: '#FF0072',
+}
+
 class MessageBuilder {
   constructor(opts) {
     this.opts = Object.assign({}, _defaults, opts);
@@ -11585,6 +11596,33 @@ class MessageBuilder {
     this.blocks.push(obj);
   }
 
+  createAttachment(){
+    return {
+      color: COLORS.NEUTRAL,
+      fields: [],
+      addField(text){
+        this.fields.push(text);
+        return this;
+      },
+      setFooter(icon, text){
+        this.footer_icon = icon;
+        this.footer = text;
+        return this;
+      }
+    }
+  }
+
+  addAttachment(attachment){
+    console.log("att", JSON.stringify(attachment));
+    const obj = {
+      color: attachment.color,
+      ts: Math.floor(Date.now() / 1000),
+      fields: attachment.fields.map(f => ({value: f, short: true}))
+    }
+    if( !this.attachments ) this.attachments = [];
+    this.attachments.push(obj);
+  }
+
   get message(){
     const ret = {
       blocks: this.blocks,
@@ -11605,6 +11643,13 @@ class MessageBuilder {
 //   .addField("field 1")
 //   .addField("field2");
 // m.addSection(section);
+
+// const att = m.createAttachment()
+//   .addField("Version: 111222")
+//   .setFooter('https://github.githubassets.com/favicon.ico', "repositorio");
+// att.color = COLORS.SUCCESS;
+
+// m.addAttachment(att);
 
 // console.log(JSON.stringify(m.message, null, 2));
 

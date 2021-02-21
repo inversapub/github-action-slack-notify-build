@@ -69,7 +69,12 @@ const { MessageBuilder } = require('./slack-lib');
         .addField('push')
         .addField('SUCCESS');
       m.addSection(section);
-      m.addDiv();
+      const att = m
+        .createAttachment()
+        .addField('Version: 111222')
+        .setFooter('https://github.githubassets.com/favicon.ico', 'repositorio');
+      att.color = COLORS.SUCCESS;
+      m.addAttachment(att);
     }
 
     const message = m.message;
