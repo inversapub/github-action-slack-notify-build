@@ -1143,9 +1143,9 @@ const { MessageBuilder, COLORS } = __webpack_require__(641);
       m.addDiv();
       const section = m
         .createSection()
-        .addField('Triggered By')
+        .addField('Event')
         .addField('Status')
-        .addField(github.context.actor)
+        .addField(eventName)
         .addField(failure ? 'FAILED' : 'SUCCESS');
       m.addSection(section);
 

@@ -78,9 +78,9 @@ const { MessageBuilder, COLORS } = require('./slack-lib');
       m.addDiv();
       const section = m
         .createSection()
-        .addField('Triggered By')
+        .addField('Event')
         .addField('Status')
-        .addField(github.context.actor)
+        .addField(eventName)
         .addField(failure ? 'FAILED' : 'SUCCESS');
       m.addSection(section);
 
