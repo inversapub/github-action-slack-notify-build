@@ -1067,7 +1067,7 @@ const core = __webpack_require__(470);
 const github = __webpack_require__(469);
 const { WebClient } = __webpack_require__(114);
 // const { buildSlackMessage } = require('./src/utils');
-const { MessageBuilder } = __webpack_require__(641);
+const { MessageBuilder, COLORS } = __webpack_require__(641);
 
 (async () => {
   try {
@@ -1127,15 +1127,17 @@ const { MessageBuilder } = __webpack_require__(641);
       m.channel = channelId;
       m.addHeader(github.context.repo.repo);
       m.addDiv();
-      const section = m.createSection()
+      const section = m
+        .createSection()
         .addField('Event')
         .addField('Status')
         .addField('push')
         .addField('SUCCESS');
       m.addSection(section);
-      const att = m.createAttachment()
-        .addField("Version: 111222")
-        .setFooter('https://github.githubassets.com/favicon.ico', "repositorio");
+      const att = m
+        .createAttachment()
+        .addField('Version: 111222')
+        .setFooter('https://github.githubassets.com/favicon.ico', 'repositorio');
       att.color = COLORS.SUCCESS;
       m.addAttachment(att);
     }
@@ -11540,6 +11542,7 @@ function plural(ms, n, name) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "COLORS", function() { return COLORS; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "MessageBuilder", function() { return MessageBuilder; });
 const _defaults = {
   as_user: true,
