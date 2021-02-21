@@ -1081,8 +1081,10 @@ const { MessageBuilder, COLORS } = __webpack_require__(641);
     const slack = new WebClient(token);
 
     const { owner, repo } = github.context.repo;
-    const repoName = `${owner}/${repo}`
+    const repoName = `${owner}/${repo}`;
     const repoUrl = `https://github.com/${repoName}`;
+
+    core.info("github: " + JSON.stringify(github.context));
 
     if (!channel && !core.getInput('channel_id')) {
       core.setFailed(`You must provider either a 'channel' or a 'channel_id'.`);
@@ -1136,16 +1138,12 @@ const { MessageBuilder, COLORS } = __webpack_require__(641);
         .addField(github.context.actor)
         .addField(failure ? 'FAILED' : 'SUCCESS');
       m.addSection(section);
-      const att = m
-        .createAttachment()
-        .setFooter('https://github.githubassets.com/favicon.ico', repoName);
+      const att = m.createAttachment().setFooter('https://github.githubassets.com/favicon.ico', repoName);
 
       if (failure) {
         att
           .addField('Image publishing failure')
-          .addField(
-            `<Check workflow error | ${repoUrl}/runs/${github.context.runId}?check_suite_focus=true>`
-          );
+          .addField(`<Check workflow error | ${repoUrl}/runs/${github.context.runId}?check_suite_focus=true>`);
         att.color = COLORS.DANGER;
       } else {
         att.addField('Successfully published version `' + version + '`');

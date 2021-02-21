@@ -19,6 +19,8 @@ const { MessageBuilder, COLORS } = require('./slack-lib');
     const repoName = `${owner}/${repo}`;
     const repoUrl = `https://github.com/${repoName}`;
 
+    core.info('github: ' + JSON.stringify(github.context));
+
     if (!channel && !core.getInput('channel_id')) {
       core.setFailed(`You must provider either a 'channel' or a 'channel_id'.`);
       return;
