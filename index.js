@@ -40,6 +40,7 @@ const { MessageBuilder } = require('./slack-lib');
     }
 
     if (start) {
+      core.info('on start flow');
       m.channel = channelId;
       m.addHeader(github.context.repo.repo);
       m.addDiv();
@@ -49,6 +50,21 @@ const { MessageBuilder } = require('./slack-lib');
         .addField('Status')
         .addField('push')
         .addField('BUILDING :loading:');
+      m.addSection(section);
+      m.addDiv();
+    }
+
+    if (finish) {
+      core.info('on finish flow');
+      m.channel = channelId;
+      m.addHeader(github.context.repo.repo);
+      m.addDiv();
+      const section = m
+        .createSection()
+        .addField('Event')
+        .addField('Status')
+        .addField('push')
+        .addField('SUCCESS');
       m.addSection(section);
       m.addDiv();
     }

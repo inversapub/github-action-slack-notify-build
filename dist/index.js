@@ -1105,7 +1105,8 @@ const { MessageBuilder } = __webpack_require__(641);
     }
 
     if (start) {
-      m.channel = channelId
+      core.info("on start flow")
+      m.channel = channelId;
       m.addHeader(github.context.repo.repo);
       m.addDiv();
       const section = m
@@ -1114,6 +1115,21 @@ const { MessageBuilder } = __webpack_require__(641);
         .addField('Status')
         .addField('push')
         .addField('BUILDING :loading:');
+      m.addSection(section);
+      m.addDiv();
+    }
+
+    if( finish ) {
+      core.info("on finish flow")
+      m.channel = channelId;
+      m.addHeader(github.context.repo.repo);
+      m.addDiv();
+      const section = m
+        .createSection()
+        .addField('Event')
+        .addField('Status')
+        .addField('push')
+        .addField('SUCCESS');
       m.addSection(section);
       m.addDiv();
     }
