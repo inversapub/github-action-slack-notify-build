@@ -36,6 +36,8 @@ module.exports =
 /******/ 		// Load entry module and return exports
 /******/ 		return __webpack_require__(104);
 /******/ 	};
+/******/ 	// initialize runtime
+/******/ 	runtime(__webpack_require__);
 /******/
 /******/ 	// run startup
 /******/ 	return startup();
@@ -1064,13 +1066,14 @@ exports.issueCommand = issueCommand;
 const core = __webpack_require__(470);
 const github = __webpack_require__(469);
 const { WebClient } = __webpack_require__(114);
-const { buildSlackMessage, formatChannelName } = __webpack_require__(543);
+const { buildSlackMessage } = __webpack_require__(543);
+const { MessageBuilder } = __webpack_require__(641);
 
 (async () => {
   try {
     const channel = core.getInput('channel');
-    const start = core.getInput('start');
-    const finish = core.getInput('finish');
+    const start = Boolen(core.getInput('start'));
+    const finish = Boolean(core.getInput('finish'));
     const version = core.getInput('version');
     const messageId = core.getInput('message_id');
     const token = process.env.SLACK_BOT_TOKEN;
@@ -1091,27 +1094,30 @@ const { buildSlackMessage, formatChannelName } = __webpack_require__(543);
     const apiMethod = Boolean(messageId) ? 'update' : 'postMessage';
     core.info(`Will ${apiMethod} in slack`);
 
-    const params = {
-      start: Boolean(start),
-      finish: Boolean(finish),
-      version,
-    };
-
-    const sections = buildSlackMessage(params, github);
-
-    core.info('header [' + start + ',' + finish + '] ' + JSON.stringify(sections.blocks[0]));
-
-    const message = {
+    const opts = {
       channel: channelId,
-      blocks: sections.blocks,
       as_user: true,
     };
 
-    if (sections.attachments.length > 0) message.attachments = sections.attachments;
-
     if (messageId) {
-      message.ts = messageId;
+      opts.ts = messageId;
     }
+
+    const m = new MessageBuilder(opts);
+
+    if( start ) {
+      m.addHeader(github.context.repo);
+      m.addDiv()
+      const section = m.createSection()
+        .addField("Event")      .addField("Status")
+        .addField("push")       .addField("BUILDING :loading:")
+      m.addSection(section);
+      m.addDiv();
+    }
+
+    const message = m.message;
+
+    core.info('header [' + start + ',' + finish + '] ' + JSON.stringify(message));
 
     const response = await slack.chat[apiMethod](message);
 
@@ -1137,6 +1143,10 @@ async function lookUpChannelId({ slack, channel }) {
   }
 
   return result;
+}
+
+function formatChannelName(channel) {
+  return channel.replace(/[#@]/g, '');
 }
 
 
@@ -10021,81 +10031,48 @@ function buildSlackMessage({ start, finish, version }, { context }) {
 
   const header = repo + (start ? ':loading:' : '');
 
-  const blocksMap = {
-    true: [
-      {
-        type: 'header',
-        text: {
-          type: 'plain_text',
-          text: `${repo} :loading:`,
-          emoji: true,
+  const blocks = [
+    {
+      type: 'header',
+      text: {
+        type: 'plain_text',
+        text: header,
+        emoji: true,
+      },
+    },
+    {
+      type: 'divider',
+    },
+    {
+      type: 'section',
+      fields: [
+        {
+          type: 'mrkdwn',
+          text: '*Event*',
         },
-      },
-      {
-        type: 'divider',
-      },
-      {
-        type: 'section',
-        fields: [
-          {
-            type: 'mrkdwn',
-            text: '*Event*',
-          },
-          {
-            type: 'mrkdwn',
-            text: '*Status*',
-          },
-          {
-            type: 'mrkdwn',
-            text: event,
-          },
-          {
-            type: 'mrkdwn',
-            text: 'BUILDING',
-          },
-        ],
-      },
-      {
-        type: 'divider',
-      },
-    ],
-    false: [
-      {
-        type: 'header',
-        text: {
-          type: 'plain_text',
-          text: `${repo}`,
-          emoji: true,
+        {
+          type: 'mrkdwn',
+          text: '*Status*',
         },
-      },
-      {
-        type: 'divider',
-      },
-      {
-        type: 'section',
-        fields: [
-          {
-            type: 'mrkdwn',
-            text: '*Event*',
-          },
-          {
-            type: 'mrkdwn',
-            text: '*Status*',
-          },
-          {
-            type: 'mrkdwn',
-            text: event,
-          },
-          {
-            type: 'mrkdwn',
-            text: 'FINISHED',
-          },
-        ],
-      },
-    ],
-  };
+        {
+          type: 'mrkdwn',
+          text: event,
+        },
+        {
+          type: 'mrkdwn',
+          text: start ? 'BUILDING' : 'FINISHED',
+        },
+      ],
+    },
+  ];
 
   const attachments = [];
+
+  if (start) {
+    blocks.push({
+      type: 'divider',
+    });
+  }
 
   if (finish) {
     const aux = {
@@ -10114,56 +10091,12 @@ function buildSlackMessage({ start, finish, version }, { context }) {
     attachments.push(aux);
   }
 
-  return { blocks: blocksMap[start], attachments };
+  return { blocks, attachments };
 
-  // const sha = event === 'pull_request' ? payload.pull_request.head.sha : github.context.sha;
-
-  // const referenceLink =
-  //   event === 'pull_request'
-  //     ? {
-  //         title: 'Pull Request',
-  //         value: `<${payload.pull_request.html_url} | ${payload.pull_request.title}>`,
-  //         short: true,
-  //       }
-  //     : {
-  //         title: 'Branch',
-  //         value: `<https://github.com/${owner}/${repo}/commit/${sha} | ${branch}>`,
-  //         short: true,
-  //       };
-
-  // return [
-  //   {
-  //     color,
-  //     fields: [
-  //       {
-  //         title: 'Action',
-  //         value: `<https://github.com/${owner}/${repo}/commit/${sha}/checks | ${workflow}>`,
-  //         short: true,
-  //       },
-  //       {
-  //         title: 'Status',
-  //         value: status,
-  //         short: true,
-  //       },
-  //       referenceLink,
-  //       {
-  //         title: 'Event',
-  //         value: event,
-  //         short: true,
-  //       },
-  //     ],
-  //     footer_icon: 'https://github.githubassets.com/favicon.ico',
-  //     footer: `<https://github.com/${owner}/${repo} | ${owner}/${repo}>`,
-  //     ts: Math.floor(Date.now() / 1000),
-  //   },
-  // ];
 }
 
 module.exports.buildSlackMessage = buildSlackMessage;
 
-function formatChannelName(channel) {
-  return channel.replace(/[#@]/g, '');
-}
 
 module.exports.formatChannelName = formatChannelName;
 
@@ -11656,6 +11589,85 @@ function plural(ms, n, name) {
   }
   return Math.ceil(ms / n) + ' ' + name + 's';
 }
+
+
+/***/ }),
+
+/***/ 641:
+/***/ (function(__unusedmodule, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "MessageBuilder", function() { return MessageBuilder; });
+const _defaults = {
+  as_user: true,
+};
+
+class MessageBuilder {
+  constructor(opts) {
+    this.opts = Object.assign({}, _defaults, opts);
+    this.blocks = [];
+  }
+
+  addHeader(text) {
+    const headerObj = {
+      type: 'header',
+      text: {
+        type: 'plain_text',
+        text: text,
+        emoji: true,
+      },
+    };
+
+    this.blocks.push(headerObj);
+  }
+
+  addDiv() {
+    this.blocks.push({
+      type: 'divider',
+    });
+  }
+
+  createSection(){
+    return {
+      fields: [],
+      addField(field) {
+        this.fields.push(field);
+        return this;
+      }
+    };
+  }
+
+  addSection(section) {
+    const obj = {
+      type: 'section',
+      fields: section.fields.map(f => ({ type: 'mrkdwn', text: f}))
+    };
+    this.blocks.push(obj);
+  }
+
+  get message(){
+    const ret = {
+      blocks: this.blocks,
+      channel: this.channel,
+      messageId: this.messageId,
+      attachments: this.attachments
+    };
+    return Object.assign({}, this.opts, ret);
+  }
+
+}
+
+// const m = new MessageBuilder({otherOpt: true});
+// m.channel = "#channel"
+// m.addHeader("this is the header")
+// m.addDiv()
+// const section = m.createSection()
+//   .addField("field 1")
+//   .addField("field2");
+// m.addSection(section);
+
+// console.log(JSON.stringify(m.message, null, 2));
 
 
 /***/ }),
@@ -18536,4 +18548,31 @@ RetryOperation.prototype.mainError = function() {
 
 /***/ })
 
-/******/ });
+/******/ },
+/******/ function(__webpack_require__) { // webpackRuntimeModules
+/******/ 	"use strict";
+/******/ 
+/******/ 	/* webpack/runtime/make namespace object */
+/******/ 	!function() {
+/******/ 		// define __esModule on exports
+/******/ 		__webpack_require__.r = function(exports) {
+/******/ 			if(typeof Symbol !== 'undefined' && Symbol.toStringTag) {
+/******/ 				Object.defineProperty(exports, Symbol.toStringTag, { value: 'Module' });
+/******/ 			}
+/******/ 			Object.defineProperty(exports, '__esModule', { value: true });
+/******/ 		};
+/******/ 	}();
+/******/ 	
+/******/ 	/* webpack/runtime/define property getter */
+/******/ 	!function() {
+/******/ 		// define getter function for harmony exports
+/******/ 		var hasOwnProperty = Object.prototype.hasOwnProperty;
+/******/ 		__webpack_require__.d = function(exports, name, getter) {
+/******/ 			if(!hasOwnProperty.call(exports, name)) {
+/******/ 				Object.defineProperty(exports, name, { enumerable: true, get: getter });
+/******/ 			}
+/******/ 		};
+/******/ 	}();
+/******/ 	
+/******/ }
+);

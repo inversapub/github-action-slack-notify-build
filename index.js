@@ -1,13 +1,14 @@
 const core = require('@actions/core');
 const github = require('@actions/github');
 const { WebClient } = require('@slack/web-api');
-const { buildSlackMessage, formatChannelName } = require('./src/utils');
+const { buildSlackMessage } = require('./src/utils');
+const { MessageBuilder } = require('./slack-lib');
 
 (async () => {
   try {
     const channel = core.getInput('channel');
-    const start = core.getInput('start');
-    const finish = core.getInput('finish');
+    const start = Boolen(core.getInput('start'));
+    const finish = Boolean(core.getInput('finish'));
     const version = core.getInput('version');
     const messageId = core.getInput('message_id');
     const token = process.env.SLACK_BOT_TOKEN;
@@ -28,27 +29,33 @@ const { buildSlackMessage, formatChannelName } = require('./src/utils');
     const apiMethod = Boolean(messageId) ? 'update' : 'postMessage';
     core.info(`Will ${apiMethod} in slack`);
 
-    const params = {
-      start: Boolean(start),
-      finish: Boolean(finish),
-      version,
-    };
-
-    const sections = buildSlackMessage(params, github);
-
-    core.info('header [' + start + ',' + finish + '] ' + JSON.stringify(sections.blocks[0]));
-
-    const message = {
+    const opts = {
       channel: channelId,
-      blocks: sections.blocks,
       as_user: true,
     };
 
-    if (sections.attachments.length > 0) message.attachments = sections.attachments;
-
     if (messageId) {
-      message.ts = messageId;
+      opts.ts = messageId;
     }
+
+    const m = new MessageBuilder(opts);
+
+    if (start) {
+      m.addHeader(github.context.repo);
+      m.addDiv();
+      const section = m
+        .createSection()
+        .addField('Event')
+        .addField('Status')
+        .addField('push')
+        .addField('BUILDING :loading:');
+      m.addSection(section);
+      m.addDiv();
+    }
+
+    const message = m.message;
+
+    core.info('header [' + start + ',' + finish + '] ' + JSON.stringify(message));
 
     const response = await slack.chat[apiMethod](message);
 
@@ -74,4 +81,8 @@ async function lookUpChannelId({ slack, channel }) {
   }
 
   return result;
+}
+
+function formatChannelName(channel) {
+  return channel.replace(/[#@]/g, '');
 }
