@@ -1090,11 +1090,15 @@ const { MessageBuilder, COLORS } = __webpack_require__(641);
     const branch = eventName === 'pull_request' ? payload.pull_request.head.ref : ref.replace('refs/heads/', '');
     const shortCommit = head_commit.id.substring(0, 8);
 
+    let newMessage;
     const re = /pull request #(\d)/;
-    const match = head_commit.message.match(re);
-    const link = `<${repoUrl}/pull/${match[1]}|${match[0]}>`;
-
-    const newMessage = head_commit.message.replace(re, link);
+    if( re.test(head_commit.message) ){
+      const match = head_commit.message.match(re);
+      const link = `<${repoUrl}/pull/${match[1]}|${match[0]}>`;
+      newMessage = head_commit.message.replace(re, link);  
+    } else {
+      newMessage = head_commit.message;
+    }
 
     if (!channel && !core.getInput('channel_id')) {
       core.setFailed(`You must provider either a 'channel' or a 'channel_id'.`);
