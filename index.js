@@ -7,7 +7,7 @@ const { MessageBuilder } = require('./slack-lib');
 (async () => {
   try {
     const channel = core.getInput('channel');
-    const start = Boolen(core.getInput('start'));
+    const start = Boolean(core.getInput('start'));
     const finish = Boolean(core.getInput('finish'));
     const version = core.getInput('version');
     const messageId = core.getInput('message_id');
