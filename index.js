@@ -15,13 +15,15 @@ const { MessageBuilder, COLORS } = require('./slack-lib');
     const token = process.env.SLACK_BOT_TOKEN;
     const slack = new WebClient(token);
 
-    const { avatar_url, login } = github.context.payload.sender;
+    const { eventName, payload, ref } = github.context;
+    const { sender, head_commit } = payload;
+    const { avatar_url, login } = sender;
     const { owner, repo } = github.context.repo;
     const repoName = `${owner}/${repo}`;
     const repoUrl = `https://github.com/${repoName}`;
-    const { eventName, payload, ref } = github.context;
 
     const branch = eventName === 'pull_request' ? payload.pull_request.head.ref : ref.replace('refs/heads/', '');
+    const shortCommit = head_commit.id.substring(0, 8);
 
     if (!channel && !core.getInput('channel_id')) {
       core.setFailed(`You must provider either a 'channel' or a 'channel_id'.`);
@@ -55,9 +57,9 @@ const { MessageBuilder, COLORS } = require('./slack-lib');
       m.addDiv();
       const section = m
         .createSection()
-        .addField('Event')
+        .addField(`Commit <${head_commit.url} | ${shortCommit}`)
         .addField('Status')
-        .addField(eventName)
+        .addField(head_commit.message)
         .addField('BUILDING :loading:');
       m.addSection(section);
 
@@ -78,9 +80,9 @@ const { MessageBuilder, COLORS } = require('./slack-lib');
       m.addDiv();
       const section = m
         .createSection()
-        .addField('Event')
+        .addField(`Commit <${head_commit.url} | ${shortCommit}`)
         .addField('Status')
-        .addField(eventName)
+        .addField(head_commit.message)
         .addField(failure ? 'FAILED' : 'SUCCESS');
       m.addSection(section);
 
