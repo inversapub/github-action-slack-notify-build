@@ -1072,12 +1072,15 @@ const { MessageBuilder } = __webpack_require__(641);
 (async () => {
   try {
     const channel = core.getInput('channel');
-    const start = Boolean(core.getInput('start'));
-    const finish = Boolean(core.getInput('finish'));
+    const start = core.getInput('start');
+    const finish = core.getInput('finish');
     const version = core.getInput('version');
     const messageId = core.getInput('message_id');
     const token = process.env.SLACK_BOT_TOKEN;
     const slack = new WebClient(token);
+
+    core.info(`s: ${start}, ${typeof(start)}`);
+    core.info(`f: ${finish}, ${typeof(finish)}`);
 
     if (!channel && !core.getInput('channel_id')) {
       core.setFailed(`You must provider either a 'channel' or a 'channel_id'.`);
@@ -1105,7 +1108,7 @@ const { MessageBuilder } = __webpack_require__(641);
     }
 
     if (start) {
-      core.info("on start flow")
+      core.info('on start flow');
       m.channel = channelId;
       m.addHeader(github.context.repo.repo);
       m.addDiv();
@@ -1119,8 +1122,8 @@ const { MessageBuilder } = __webpack_require__(641);
       m.addDiv();
     }
 
-    if( finish ) {
-      core.info("on finish flow")
+    if (finish) {
+      core.info('on finish flow');
       m.channel = channelId;
       m.addHeader(github.context.repo.repo);
       m.addDiv();
