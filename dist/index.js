@@ -1135,12 +1135,13 @@ const { MessageBuilder, COLORS } = __webpack_require__(641);
         .addField(github.context.actor)
         .addField(failure ? 'FAILED' : 'SUCCESS');
       m.addSection(section);
-      const att = m.createAttachment().setFooter('https://github.githubassets.com/favicon.ico', github.context.repository);
+      const att = m
+        .createAttachment()
+        .setFooter('https://github.githubassets.com/favicon.ico', github.context.repository);
 
       if (failure) {
-        att
-          .addField('Image publishing failure')
-          .addField('Workflow: ' + github.context.workflow);
+        att.addField('Image publishing failure')
+        .addField(`<Check workflow error> | https://github.com/${github.context.repository}/runs/${github.context.run_id}?check_suite_focus=true>`);
         att.color = COLORS.DANGER;
       } else {
         att.addField('Successfully published version `' + version + '`');
