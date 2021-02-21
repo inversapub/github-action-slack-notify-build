@@ -1085,7 +1085,7 @@ const { MessageBuilder, COLORS } = __webpack_require__(641);
     const repoName = `${owner}/${repo}`;
     const repoUrl = `https://github.com/${repoName}`;
 
-    core.info('github: ' + JSON.stringify(github.context));
+    core.info('github: ' + JSON.stringify(github));
 
     if (!channel && !core.getInput('channel_id')) {
       core.setFailed(`You must provider either a 'channel' or a 'channel_id'.`);
@@ -1125,7 +1125,8 @@ const { MessageBuilder, COLORS } = __webpack_require__(641);
         .addField('BUILDING :loading:');
       m.addSection(section);
 
-      const published = m.createContext()
+      const published = m
+        .createContext()
         .addImageElement(avatar_url, login)
         .addTextElement(`Published by: *${login}*`);
 
