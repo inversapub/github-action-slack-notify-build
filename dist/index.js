@@ -1095,18 +1095,18 @@ const { MessageBuilder } = __webpack_require__(641);
     core.info(`Will ${apiMethod} in slack`);
 
     const opts = {
-      channel: channelId,
       as_user: true,
     };
 
-    if (messageId) {
-      opts.ts = messageId;
-    }
-
     const m = new MessageBuilder(opts);
 
+    if (messageId) {
+      m.messageId = messageId;
+    }
+
     if (start) {
-      m.addHeader(github.context.repo);
+      m.channel = channelId
+      m.addHeader(github.context.repo.repo);
       m.addDiv();
       const section = m
         .createSection()
@@ -11570,7 +11570,7 @@ class MessageBuilder {
     const ret = {
       blocks: this.blocks,
       channel: this.channel,
-      messageId: this.messageId,
+      ts: this.messageId,
       attachments: this.attachments
     };
     return Object.assign({}, this.opts, ret);

@@ -30,18 +30,18 @@ const { MessageBuilder } = require('./slack-lib');
     core.info(`Will ${apiMethod} in slack`);
 
     const opts = {
-      channel: channelId,
       as_user: true,
     };
 
-    if (messageId) {
-      opts.ts = messageId;
-    }
-
     const m = new MessageBuilder(opts);
 
+    if (messageId) {
+      m.messageId = messageId;
+    }
+
     if (start) {
-      m.addHeader(github.context.repo);
+      m.channel = channelId;
+      m.addHeader(github.context.repo.repo);
       m.addDiv();
       const section = m
         .createSection()
