@@ -1136,8 +1136,8 @@ const { MessageBuilder, COLORS } = __webpack_require__(641);
       m.addSection(section);
       const att = m
         .createAttachment()
-        .addField('Version: 111222')
-        .setFooter('https://github.githubassets.com/favicon.ico', 'repositorio');
+        .addField(`Successfully generated: ${version}`)
+        .setFooter('https://github.githubassets.com/favicon.ico', `${github.context.repo.owner}/${github.context.repo.repo}`);
       att.color = COLORS.SUCCESS;
       m.addAttachment(att);
     }
@@ -11620,7 +11620,9 @@ class MessageBuilder {
     const obj = {
       color: attachment.color,
       ts: Math.floor(Date.now() / 1000),
-      fields: attachment.fields.map(f => ({value: f, short: true}))
+      fields: attachment.fields.map(f => ({value: f, short: true})),
+      footer_icon: attachment.footer_icon,
+      footer: attachment.footer
     }
     if( !this.attachments ) this.attachments = [];
     this.attachments.push(obj);
@@ -11638,23 +11640,23 @@ class MessageBuilder {
 
 }
 
-// const m = new MessageBuilder({otherOpt: true});
-// m.channel = "#channel"
-// m.addHeader("this is the header")
-// m.addDiv()
-// const section = m.createSection()
-//   .addField("field 1")
-//   .addField("field2");
-// m.addSection(section);
+const m = new MessageBuilder({otherOpt: true});
+m.channel = "#channel"
+m.addHeader("this is the header")
+m.addDiv()
+const section = m.createSection()
+  .addField("field 1")
+  .addField("field2");
+m.addSection(section);
 
-// const att = m.createAttachment()
-//   .addField("Version: 111222")
-//   .setFooter('https://github.githubassets.com/favicon.ico', "repositorio");
-// att.color = COLORS.SUCCESS;
+const att = m.createAttachment()
+  .addField("Version: 111222")
+  .setFooter('https://github.githubassets.com/favicon.ico', "repositorio");
+att.color = COLORS.SUCCESS;
 
-// m.addAttachment(att);
+m.addAttachment(att);
 
-// console.log(JSON.stringify(m.message, null, 2));
+console.log(JSON.stringify(m.message, null, 2));
 
 
 /***/ }),

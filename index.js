@@ -71,8 +71,11 @@ const { MessageBuilder, COLORS } = require('./slack-lib');
       m.addSection(section);
       const att = m
         .createAttachment()
-        .addField('Version: 111222')
-        .setFooter('https://github.githubassets.com/favicon.ico', 'repositorio');
+        .addField(`Successfully generated: ${version}`)
+        .setFooter(
+          'https://github.githubassets.com/favicon.ico',
+          `${github.context.repo.owner}/${github.context.repo.repo}`
+        );
       att.color = COLORS.SUCCESS;
       m.addAttachment(att);
     }
