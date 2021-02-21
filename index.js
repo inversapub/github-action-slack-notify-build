@@ -29,7 +29,7 @@ const { MessageBuilder } = require('./slack-lib');
       return;
     }
 
-    const apiMethod = Boolean(messageId) ? 'update' : 'postMessage';
+    const apiMethod = messageId && messageId !== '' ? 'postMessage' : 'postMessage';
     core.info(`Will ${apiMethod} in slack`);
 
     const opts = {

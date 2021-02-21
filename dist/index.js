@@ -1094,7 +1094,7 @@ const { MessageBuilder } = __webpack_require__(641);
       return;
     }
 
-    const apiMethod = Boolean(messageId) ? 'update' : 'postMessage';
+    const apiMethod = messageId && messageId !== '' ? 'postMessage' : 'postMessage';
     core.info(`Will ${apiMethod} in slack`);
 
     const opts = {
