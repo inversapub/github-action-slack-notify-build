@@ -1080,11 +1080,12 @@ const { MessageBuilder, COLORS } = __webpack_require__(641);
     const token = process.env.SLACK_BOT_TOKEN;
     const slack = new WebClient(token);
 
+    const { avatar_url, login } = github.context.payload.sender;
     const { owner, repo } = github.context.repo;
     const repoName = `${owner}/${repo}`;
     const repoUrl = `https://github.com/${repoName}`;
 
-    core.info("github: " + JSON.stringify(github.context));
+    core.info('github: ' + JSON.stringify(github.context));
 
     if (!channel && !core.getInput('channel_id')) {
       core.setFailed(`You must provider either a 'channel' or a 'channel_id'.`);
@@ -1123,6 +1124,13 @@ const { MessageBuilder, COLORS } = __webpack_require__(641);
         .addField('push')
         .addField('BUILDING :loading:');
       m.addSection(section);
+
+      const published = m.createContext()
+        .addImageElement(avatar_url, login)
+        .addTextElement(`Published by: *${login}*`);
+
+      m.addContext(published);
+
       m.addDiv();
     }
 
@@ -1143,7 +1151,7 @@ const { MessageBuilder, COLORS } = __webpack_require__(641);
       if (failure) {
         att
           .addField('Image publishing failure')
-          .addField(`<Check workflow error | ${repoUrl}/runs/${github.context.runId}?check_suite_focus=true>`);
+          .addField(`<${repoUrl}/runs/${github.context.runId}?check_suite_focus=true> | Check workflow error`);
         att.color = COLORS.DANGER;
       } else {
         att.addField('Successfully published version `' + version + '`');
@@ -11606,6 +11614,28 @@ class MessageBuilder {
     const obj = {
       type: 'section',
       fields: section.fields.map(f => ({ type: 'mrkdwn', text: f}))
+    };
+    this.blocks.push(obj);
+  }
+
+  createContext(){
+    return {
+      elements: [],
+      addImageElement(imageUrl, altText = "") {
+        this.elements.push({type: 'image', image_url: imageUrl, alt_text: altText});
+        return this;
+      },
+      addTextElement(text) {
+        this.elements.push({type: 'mrkdwn', text});
+        return this;
+      }
+    };
+  }
+
+  addContext(context) {
+    const obj = {
+      type: 'context',
+      elements: context.elements
     };
     this.blocks.push(obj);
   }

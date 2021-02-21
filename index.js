@@ -15,6 +15,7 @@ const { MessageBuilder, COLORS } = require('./slack-lib');
     const token = process.env.SLACK_BOT_TOKEN;
     const slack = new WebClient(token);
 
+    const { avatar_url, login } = github.context.payload.sender;
     const { owner, repo } = github.context.repo;
     const repoName = `${owner}/${repo}`;
     const repoUrl = `https://github.com/${repoName}`;
@@ -58,6 +59,14 @@ const { MessageBuilder, COLORS } = require('./slack-lib');
         .addField('push')
         .addField('BUILDING :loading:');
       m.addSection(section);
+
+      const published = m
+        .createContext()
+        .addImageElement(avatar_url, login)
+        .addTextElement(`Published by: *${login}*`);
+
+      m.addContext(published);
+
       m.addDiv();
     }
 
@@ -78,7 +87,7 @@ const { MessageBuilder, COLORS } = require('./slack-lib');
       if (failure) {
         att
           .addField('Image publishing failure')
-          .addField(`<Check workflow error | ${repoUrl}/runs/${github.context.runId}?check_suite_focus=true>`);
+          .addField(`<${repoUrl}/runs/${github.context.runId}?check_suite_focus=true> | Check workflow error`);
         att.color = COLORS.DANGER;
       } else {
         att.addField('Successfully published version `' + version + '`');
