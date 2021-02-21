@@ -65,18 +65,17 @@ const { MessageBuilder, COLORS } = require('./slack-lib');
       m.addDiv();
       const section = m
         .createSection()
-        .addField('Event')
+        .addField('Triggered By')
         .addField('Status')
-        .addField('push')
-        .addField('SUCCESS');
+        .addField(github.context.actor)
+        .addField(failure ? 'FAILED' : 'SUCCESS');
       m.addSection(section);
-      const att = m.createAttachment().setFooter('https://github.githubassets.com/favicon.ico', github.repository);
+      const att = m
+        .createAttachment()
+        .setFooter('https://github.githubassets.com/favicon.ico', github.context.repository);
 
       if (failure) {
-        att
-          .addField('Image publishing failure')
-          .addField('Workflow: ' + github.workflow)
-          .addField('Triggered by: ' + github.actor);
+        att.addField('Image publishing failure').addField('Workflow: ' + github.context.workflow);
         att.color = COLORS.DANGER;
       } else {
         att.addField('Successfully published version `' + version + '`');
