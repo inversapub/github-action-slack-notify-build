@@ -1102,7 +1102,7 @@ const { MessageBuilder, COLORS } = __webpack_require__(641);
       return;
     }
 
-    const apiMethod = messageId && messageId !== '' ? 'postMessage' : 'postMessage';
+    const apiMethod = messageId && messageId !== '' ? 'update' : 'postMessage';
     core.info(`Will ${apiMethod} in slack`);
 
     const opts = {

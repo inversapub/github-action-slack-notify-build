@@ -37,7 +37,7 @@ const { MessageBuilder, COLORS } = require('./slack-lib');
       return;
     }
 
-    const apiMethod = messageId && messageId !== '' ? 'postMessage' : 'postMessage';
+    const apiMethod = messageId && messageId !== '' ? 'update' : 'postMessage';
     core.info(`Will ${apiMethod} in slack`);
 
     const opts = {
